@@ -1,0 +1,337 @@
+<!doctype html>
+<html>
+	<head>
+
+		<link href='http://fonts.googleapis.com/css?family=The+Girl+Next+Door|Great+Vibes|Vibur' rel='stylesheet' type='text/css'>
+
+	<style>
+
+		h1{
+			background-color: #99ddff;
+			color: #ffffff;
+			text-align: center;
+			font-family: 'Great Vibes', cursive;
+			font-size: 65px;
+		}
+
+		h2{
+			color:#ff80c0;
+			font-family: 'Vibur', cursive;
+			font-size: 36px;
+		}
+
+		h3{
+
+			color: #ff80c0;
+			text-align: center;
+
+		}
+
+		body {
+			background-color: #99ddff;
+		}
+
+		p{
+			color:#ffffff;
+			font-family: 'The Girl Next Door', cursive;
+			font-size: 20px;
+			font-weight: bold;
+			text-align: center;
+		}
+
+		button{
+			background-color: #ffcde6;
+			font-family: 'The Girl Next Door', cursive;
+			font-size: 20px;
+			font-weight: bold;
+			text-align: center;
+			color:#ff80c0;
+			text-align: center;
+			margin-left: 550px ;
+
+		}
+
+	</style>
+
+	<title>Cake Baby Bakery</title>
+	</head>
+	<body>	
+	
+		<div id="cakeHook" ></div>
+		
+
+		<script>
+
+		(function (cakeBakery){
+		//FIRST STEP: We have to build the data objects
+
+		cakeBakery.Ingredients = function(name,measurement,cost){
+			this.name=name;
+			this.measurement=measurement;
+			this.cost=cost;
+		}
+
+		cakeBakery.Products= function(name,ingredients){
+			this.name=name;
+			this.ingredients=ingredients;
+		}
+
+		var products=[];
+		
+
+		var flour = new cakeBakery.Ingredients("Flour",  "cup", 1);
+		var sugar = new cakeBakery.Ingredients("Sugar", "cup",  0.5);
+		var eggs = new cakeBakery.Ingredients ("Eggs", "egg", 0.2);
+		var bakingPowder = new cakeBakery.Ingredients("Baking Powder", "tsp", 1);
+		var bakingSoda = new cakeBakery.Ingredients("Baking Soda", "tsp", 1);
+		var chocolatePowder = new cakeBakery.Ingredients("Chocolate Powder", "cup", 2);
+		var chocolateChips= new cakeBakery.Ingredients("Chocolate Chips", "cup", 2.5);
+		var butter= new cakeBakery.Ingredients("Butter", "cup", 4);
+
+		var ingredientsChocolateCake= [
+				{name:flour.name, quantity:1.75, measurement: flour.measurement, cost:flour.cost},
+				{name:sugar.name, quantity:2, measurement: sugar.measurement, cost:sugar.cost}, 
+				{name:eggs.name,quantity:2, measurement: eggs.measurement, cost:eggs.cost}, 
+				{name:bakingPowder.name,quantity:1.5, measurement: bakingPowder.measurement, cost:bakingPowder.cost}, 
+				{name:bakingSoda.name, quantity:1.75, measurement: bakingSoda.measurement, cost:bakingSoda.cost}, 
+				{name:chocolatePowder.name,quantity:0.75, measurement: chocolatePowder.measurement, cost: chocolatePowder.cost}];
+
+		var ingredientsCookies=[{name:butter.name,quantity:0.5, measurement: butter.measurement, cost:butter.cost},
+			{name:flour.name, quantity: 1.5, measurement:flour.measurement, cost:flour.cost}, 
+			{name:bakingPowder.name, quantity: 0.5, measurement: bakingPowder.measurement, cost:bakingPowder.cost},
+			{name:eggs.name,quantity: 1, measurement: eggs.measurement, cost:eggs.cost},
+			{name:chocolateChips.name, quantity: 1, measurement: chocolateChips.measurement, cost:chocolateChips.cost}];
+
+		var chocolateCake= new cakeBakery.Products("Chocolate Cake",ingredientsChocolateCake);
+		var cookies= new cakeBakery.Products("Cookies", ingredientsCookies);
+
+		
+		products.push(chocolateCake);
+		products.push(cookies);
+			
+		
+		//SECOND STEP: PUT HTML ON THE PAGE
+
+		var myHookDiv = document.getElementById("cakeHook");
+
+		//Title
+
+		var title= document.createElement("div");
+		title.innerHTML="<h1> Welcome to Cake Baby Bakery </h1>";
+		myHookDiv.appendChild(title);
+
+
+		// Display the recipe 	
+		function renderRecipe(aProduct) {
+
+				var container = document.createElement("div");
+				container.style['background-color']='#b3e6ff';
+				
+				var productName = document.createElement("p");
+
+				productName.innerHTML = "<h2>" + aProduct.name + "</h2>";
+				container.appendChild(productName);
+
+				
+				for (var i = 0; i < aProduct.ingredients.length; i++){
+
+
+				var productIngredients = document.createElement("p");
+				productIngredients.innerHTML = aProduct.ingredients[i].name + "  " +aProduct.ingredients[i].quantity + "  " +aProduct.ingredients[i].measurement;
+
+				container.appendChild(productIngredients);
+				}
+				
+				
+				var addrecipe = document.createElement("div");
+				var button=document.createElement("button");
+				var textbutton=document.createTextNode("Add to the list");
+				button.appendChild(textbutton);
+				addrecipe.appendChild(button);
+				
+				addrecipe.onclick = function(){
+
+					//calls a function that added the ingredients to the master list
+
+					addtoMasterList(aProduct);
+					//calculates the total of the day
+					calculateTotal(aProduct);
+					//message
+					this.button=document.createElement("button");
+					//var textbutton=document.createTextNode("Added");
+					button.appendChild(textbutton);
+					addrecipe.appendChild(button);
+					
+				};//function onclick
+				container.appendChild(addrecipe);
+		
+				myHookDiv.appendChild(container);
+				
+			} //function renderRecipe
+			
+		//use our renderRecipe function
+		renderRecipe(products[0]);
+		renderRecipe(products[1]);
+
+		//Variables and div elements needed for the master list
+
+		var container = document.createElement("div");
+		container.style['background-color']='#b3e6ff';
+
+		var masterList = document.createElement("p");
+		masterList.innerHTML = "<h2> Today's used ingredients </h2>";
+		container.appendChild(masterList);
+
+		var flourused=0;
+		var sugarused=0;
+		var eggsused=0;
+		var bakingPowderused=0;
+		var bakingSodaused=0;
+		var chocolatePowderused=0;
+		var chocolateChipsused=0;
+		var butterused=0;
+		var usedflour = document.createElement("p");
+		var usedsugar = document.createElement("p");
+		var usedeggs = document.createElement("p");
+		var usedbakingPowder = document.createElement("p");
+		var usedbakingSoda = document.createElement("p");
+		var usedchocolatePowder = document.createElement("p");
+		var usedchocolateChips = document.createElement("p");
+		var usedbutter = document.createElement("p");
+
+
+		var masteringredientsList=[];
+
+		function addtoMasterList(aProduct){
+
+				for (var i = 0; i < aProduct.ingredients.length; i++){
+					
+					if(aProduct.ingredients[i].name==flour.name){
+
+						flourused+=aProduct.ingredients[i].quantity;
+						//print it 
+						var uflour=usedflour.innerHTML =  flourused +"  " +flour.measurement + "  " +flour.name;
+
+						// Add to the master list
+						masteringredientsList.push(uflour);
+						container.appendChild(usedflour);
+
+					}
+
+					if(aProduct.ingredients[i].name==sugar.name){
+
+						sugarused+=aProduct.ingredients[i].quantity;
+						var usugar=usedsugar.innerHTML =  sugarused +"  " +sugar.measurement + "  " +sugar.name;
+						// Add to the master list
+						masteringredientsList.push(usugar);				
+						container.appendChild(usedsugar);
+
+					}
+					if(aProduct.ingredients[i].name==eggs.name){
+
+						eggsused+=aProduct.ingredients[i].quantity;
+						var ueggs=usedeggs.innerHTML =  eggsused +"  " +eggs.measurement + "  " +eggs.name;
+						masteringredientsList.push(ueggs);
+						container.appendChild(usedeggs);
+
+					}
+					if(aProduct.ingredients[i].name==bakingPowder.name){
+
+						bakingPowderused+=aProduct.ingredients[i].quantity;
+						var ubPowd=usedbakingPowder.innerHTML =  bakingPowderused +"  " +bakingPowder.measurement + "  " +bakingPowder.name;
+
+						masteringredientsList.push(ubPowd);
+						container.appendChild(usedbakingPowder);
+
+					}
+					if(aProduct.ingredients[i].name==bakingSoda.name){
+
+						bakingSodaused+=aProduct.ingredients[i].quantity;
+						var ubSoda=usedbakingSoda.innerHTML =  bakingSodaused +"  " +bakingSoda.measurement + "  " +bakingSoda.name;
+						masteringredientsList.push(ubSoda);
+						container.appendChild(usedbakingSoda);
+
+					}
+					if(aProduct.ingredients[i].name==chocolatePowder.name){
+
+						chocolatePowderused+=aProduct.ingredients[i].quantity;
+						var uchPow=usedchocolatePowder.innerHTML =  chocolatePowderused +"  " +chocolatePowder.measurement + "  " +chocolatePowder.name;
+						masteringredientsList.push(uchPow);
+						container.appendChild(usedchocolatePowder);
+
+					}
+					if(aProduct.ingredients[i].name==chocolateChips.name){
+
+						chocolateChipsused+=aProduct.ingredients[i].quantity;
+						var uchCh=usedchocolateChips.innerHTML =  chocolateChipsused +"  " +chocolateChips.measurement + "  " +chocolateChips.name;
+						masteringredientsList.push(uchCh);
+						container.appendChild(usedchocolateChips);
+
+					}
+					if(aProduct.ingredients[i].name==butter.name){
+
+						butterused+=aProduct.ingredients[i].quantity;
+						var ubutt=usedbutter.innerHTML =  butterused +"  " +butter.measurement + "  " +butter.name;
+						masteringredientsList.push(ubutt);
+						container.appendChild(usedbutter);
+
+					}	
+
+				}
+
+
+				myHookDiv.appendChild(container);
+
+		}// function addtoMasterList
+
+
+		var container2 = document.createElement("div");
+		container2.style['background-color']='#ffe7f3';
+		container2.style['border-style']='solid';
+		container2.style['border-color']='#ff80c0';
+
+		var total = document.createElement("p");
+
+		var costmeasurement=[];
+
+		function calculateTotal(aProduct) {
+
+				for (var i = 0; i < aProduct.ingredients.length; i++){
+
+					var ingredientsproductTotal = aProduct.ingredients[i].quantity * aProduct.ingredients[i].cost;
+					costmeasurement.push(ingredientsproductTotal);
+				}//for	
+
+				var totaloftheday=0;
+
+				for(var j = 0; j < costmeasurement.length; j++){
+
+					totaloftheday += costmeasurement[j];
+					
+				}
+
+				//costmeasurement.innerHTML=costmeasurement;
+				totaloftheday.innerHTML=totaloftheday;
+
+				total.innerHTML = "<h2>" + "Total of the day:   " + totaloftheday + //costmeasurement + 
+				"  $"+ "</h2>";
+				container2.appendChild(total);
+				myHookDiv.appendChild(container2);
+
+
+		}// function calculateTotal	
+
+		//Add footer to the page
+		var footer= document.createElement("footer");
+		footer.innerHTML="<p> Laura Chico Tierno ITMD 565 </p>";
+		myHookDiv.appendChild(footer);
+
+	})(window.cakeBakery=window.cakeBakery||{});
+		
+
+	</script>
+
+	
+	</body>
+
+</html>
